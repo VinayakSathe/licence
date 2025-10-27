@@ -122,24 +122,24 @@ const Contact = () => {
               {[
                 {
                   icon: <FaMapMarkerAlt className="text-cyan-600 text-2xl" />,
-                  text: "123 Dream Street, Pune, Maharashtra, India",
+                  // text: "123 Dream Street, Pune, Maharashtra, India",
                 },
                 {
                   icon: <FaEnvelope className="text-cyan-600 text-2xl" />,
                   text: (
                     <a
-                      href="mailto:contact@auspiciousnumerology.com"
+                      href="info@dostenterprises.com"
                       className="hover:text-cyan-500 transition"
                     >
-                      contact@auspiciousnumerology.com
+                      info@dostenterprises.com
                     </a>
                   ),
                 },
                 {
                   icon: <FaPhoneAlt className="text-cyan-600 text-2xl" />,
                   text: (
-                    <a href="tel:+918390005111" className="hover:text-cyan-500">
-                      +91 83900 05111
+                    <a href="tel:+91000000000" className="hover:text-cyan-500">
+                      +91 0000000000
                     </a>
                   ),
                 },
@@ -296,15 +296,6 @@ const Contact = () => {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </motion.div>
-
-      {/* Footer */}
-      <div className="text-center text-gray-500 mt-10 pb-6">
-        © {new Date().getFullYear()}{" "}
-        <span className="text-cyan-600 font-semibold">
-          Auspicious Numerology
-        </span>{" "}
-        | Crafted with 💙, Motion & Tailwind Magic ✨
-      </div>
     </div>
   );
 };

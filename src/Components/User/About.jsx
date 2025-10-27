@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import mission from "../../Images/mission1.png";
 import {
   FaUserGraduate,
@@ -13,9 +13,70 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-// ✅ Background image (your provided link)
+// Background image (your provided link)
 const herosection =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyDq3OZdacoEoDWLyfsxJGOy-0KFKah59UDmeHIY6-4E5WIgNkCLHIs4exvmVBo6vfd0Q&usqp=CAU";
+
+// Counter component for animated numbers
+const Counter = ({ end, suffix = "", duration = 2000 }) => {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(null);
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    const element = countRef.current;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          let startTime = null;
+          const startValue = 0;
+          const endValue = end;
+
+          const animate = (currentTime) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentCount = Math.floor(startValue + easeOutQuart * (endValue - startValue));
+            
+            setCount(currentCount);
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+
+          requestAnimationFrame(animate);
+          
+          // Disconnect observer after animation starts
+          if (observerRef.current) {
+            observerRef.current.disconnect();
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (element) {
+      observerRef.current = observer;
+      observer.observe(element);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [end, duration]);
+
+  return (
+    <span ref={countRef}>
+      {count}{suffix}
+    </span>
+  );
+};
 
 const About = () => {
   return (
@@ -27,11 +88,11 @@ const About = () => {
           alt="About background"
           className="absolute inset-0 w-full h-full object-cover transform scale-105 brightness-[0.75] blur-[1px]"
         />
-        {/* ✅ Slightly stronger bluish overlay */}
+        {/* Slightly stronger bluish overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/55 via-sky-900/50 to-indigo-900/50"></div>
 
         <div className="relative z-10 px-8 sm:px-16 lg:px-24 text-center">
-          {/* 🌟 Title in teal blue */}
+          {/* Title in teal blue */}
           <h1
             className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-4 animate-fade-in drop-shadow-[0_3px_8px_rgba(0,0,0,0.6)]"
             style={{ color: "#0096B3" }}
@@ -134,7 +195,7 @@ const About = () => {
               },
               {
                 title: "Cost-Effective",
-                desc: "Value-driven services that don’t just fit your budget — they exceed expectations.",
+                desc: "Value-driven services that don't just fit your budget — they exceed expectations.",
                 icon: <FaStar />,
                 color: "from-violet-500 to-indigo-500",
               },
@@ -221,7 +282,7 @@ const About = () => {
                   ))}
                 </div>
                 <p className="text-xl text-slate-700 italic mb-8 leading-relaxed px-4">
-                  “{t.quote}”
+                  "{t.quote}"
                 </p>
                 <h4 className="font-semibold text-2xl text-slate-800">
                   {t.name}
@@ -237,16 +298,18 @@ const About = () => {
       <section className="py-20 bg-gradient-to-r from-emerald-600 via-sky-700 to-indigo-700 text-white">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {[
-            { value: "2,500+", label: "Licenses Issued" },
-            { value: "98%", label: "Client Satisfaction" },
-            { value: "1,200+", label: "Renewals Processed" },
-            { value: "500+", label: "Positive Feedbacks" },
+            { value: 2500, suffix: "+", label: "Licenses Issued" },
+            { value: 98, suffix: "%", label: "Client Satisfaction" },
+            { value: 1200, suffix: "+", label: "Renewals Processed" },
+            { value: 500, suffix: "+", label: "Positive Feedbacks" },
           ].map((s, i) => (
             <div
               key={i}
               className="transition transform hover:-translate-y-2 hover:scale-[1.03]"
             >
-              <div className="text-5xl font-extrabold mb-2">{s.value}</div>
+              <div className="text-5xl font-extrabold mb-2">
+                <Counter end={s.value} suffix={s.suffix} duration={2000} />
+              </div>
               <p className="text-lg font-medium opacity-90">{s.label}</p>
             </div>
           ))}

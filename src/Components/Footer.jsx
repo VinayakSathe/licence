@@ -30,8 +30,8 @@ const Footer = () => {
 
   const quickLinks = [
     { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
     { path: "/ourservices", label: "Our Services" },
+    { path: "/about", label: "About" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -98,16 +98,16 @@ const Footer = () => {
       text: "info@dostenterprises.com",
       link: "mailto:info@dostenterprises.com"
     },
-    {
-      icon: "📞",
-      text: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
-    },
-    {
-      icon: "📍",
-      text: "123 Business Ave, Suite 100 City, State 12345",
-      link: "#"
-    }
+    // {
+    //   icon: "📞",
+    //   text: "+1 (555) 123-4567",
+    //   link: "tel:+15551234567"
+    // },
+    // {
+    //   icon: "📍",
+    //   text: "123 Business Ave, Suite 100 City, State 12345",
+    //   link: "#"
+    // }
   ];
 
   return (
@@ -289,19 +289,6 @@ const Footer = () => {
             <a href="#" className="hover:text-blue-600 transition-colors">Terms of Service</a>
             <a href="#" className="hover:text-blue-600 transition-colors">Cookie Policy</a>
           </div>
-
-          {/* Back to Top Button */}
-          <motion.button
-            onClick={scrollToTop}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
-          >
-            <span>Back to Top</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-          </motion.button>
         </motion.div>
       </div>
 

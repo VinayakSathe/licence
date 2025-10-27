@@ -26,7 +26,7 @@ import RoleProtectedRoute from "./Components/RoleProtectedRoute ";
 import { AuthProvider } from "./Utils/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import OurServices from "./Components/User/OurServices"; // Import the OurServices component
+import OurServices from "./Components/User/OurServices";
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -38,18 +38,14 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Create a component to handle header and footer visibility
+// Create a component to handle layout
 const AppContent = () => {
   const location = useLocation();
 
-  // Define routes where header and footer should be hidden
-  const hideHeaderFooterRoutes = ["/login", "/register"];
-  const showHeaderFooter = !hideHeaderFooterRoutes.includes(location.pathname);
-
   return (
     <>
-      {/* Conditionally render header */}
-      {showHeaderFooter && <Navbar />}
+      {/* Always show header/navbar on all pages */}
+      <Navbar />
 
       <ScrollToTop />
       <Routes>
@@ -97,7 +93,7 @@ const AppContent = () => {
 
         {/* User routes */}
         <Route path="/" element={<UserSection />} />
-        <Route path="/ourservices" element={<OurServices />} /> {/* Added OurServices route */}
+        <Route path="/ourservices" element={<OurServices />} />
         <Route
           path="/customerlicenselist"
           element={<CustomerLicenseListPopup />}
@@ -114,8 +110,8 @@ const AppContent = () => {
 
       <ToastContainer />
 
-      {/* Conditionally render footer */}
-      {showHeaderFooter && <Footer />}
+      {/* Always show footer on all pages */}
+      <Footer />
     </>
   );
 };

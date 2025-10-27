@@ -26,19 +26,12 @@ import {
   FaCogs
 } from "react-icons/fa";
 
-console.log(Logo);
-
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: "Your license application was approved", time: "5 min ago", read: false, type: "success" },
-    { id: 2, message: "New feature available: License tracking", time: "1 hour ago", read: true, type: "info" },
-    { id: 3, message: "Profile update required", time: "2 days ago", read: true, type: "warning" }
-  ]);
   
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -47,6 +40,11 @@ const Navbar = () => {
 
   const { user, logout } = useContext(AuthContext);
   const userRoles = user?.roles || [];
+
+  // Check if current route is auth page (login/register)
+  const isAuthPage = () => {
+    return location.pathname === "/login" || location.pathname === "/register";
+  };
 
   // Redirect admin users to dashboard after login (only once)
   useEffect(() => {
@@ -70,16 +68,6 @@ const Navbar = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
     setIsNotificationsOpen(false);
-  };
-
-  const toggleNotifications = () => {
-    setIsNotificationsOpen(!isNotificationsOpen);
-    setIsDropdownOpen(false);
-    
-    // Mark all as read when opening notifications
-    if (!isNotificationsOpen) {
-      setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
-    }
   };
 
   // Get user initial
@@ -137,51 +125,37 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const getRoleBadgeColor = (role) => {
-    switch (role) {
-      case "ADMIN":
-        return "bg-gradient-to-r from-rose-100 to-pink-100 text-rose-700 border-rose-200";
-      case "USER":
-        return "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border-blue-200";
-      default:
-        return "bg-gradient-to-r from-gray-100 to-slate-100 text-gray-700 border-gray-200";
-    }
-  };
-
-  const getRoleIcon = (role) => {
-    switch (role) {
-      case "ADMIN":
-        return <FaShieldAlt className="text-rose-600" />;
-      case "USER":
-        return <FaUserCog className="text-blue-600" />;
-      default:
-        return <FaUserCircle className="text-gray-600" />;
-    }
-  };
-
-  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
-
-  // Navigation items based on user role
+  // Navigation items based on user role and page context
   const getNavigationItems = () => {
+    // If on auth pages (login/register), show user navigation regardless of actual role
+    if (isAuthPage()) {
+      return [
+        { path: "/", label: "Home", icon: FaHome },
+        { path: "/ourservices", label: "Our Services", icon: FaCogs },
+        { path: "/about", label: "About", icon: FaInfoCircle },
+        { path: "/contact", label: "Contact", icon: FaEnvelope },
+      ];
+    }
+    
+    // Regular role-based navigation for other pages
     if (user && userRoles.includes("ADMIN")) {
-      // Admin navigation - Home, Dashboard, Services
       return [
         { path: "/", label: "Home", icon: FaHome },
         { path: "/dashboard", label: "Dashboard", icon: FaChartLine },
         { path: "#", label: "Services", icon: FaGem }
       ];
     } else if (user && userRoles.includes("USER")) {
-      // User navigation when logged in - Home, Our Services, About, Contact
       return [
         { path: "/", label: "Home", icon: FaHome },
-        { path: "/ourservices", label: "OurServices", icon: FaCogs },
+        { path: "/ourservices", label: "Our Services", icon: FaCogs },
         { path: "/about", label: "About", icon: FaInfoCircle },
         { path: "/contact", label: "Contact", icon: FaEnvelope },
       ];
     } else {
-      // When not logged in - Home, About, Contact
+      // When not logged in - Home, Our Services, About, Contact
       return [
         { path: "/", label: "Home", icon: FaHome },
+        { path: "/ourservices", label: "Our Services", icon: FaCogs },
         { path: "/about", label: "About", icon: FaInfoCircle },
         { path: "/contact", label: "Contact", icon: FaEnvelope },
       ];
@@ -194,7 +168,7 @@ const Navbar = () => {
     <nav className="bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-200/60 relative z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo with DOST ENTERPRISES */}
+          {/* Logo */}
           <motion.div className="flex-shrink-0 flex items-center">
             <a href="/" className="flex items-center gap-4">
               {Logo && !imgError ? (
@@ -231,8 +205,8 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden sm:flex sm:items-center sm:space-x-1">
             {navigationItems.map((item) => (
-              item.label === "Services" && user && userRoles.includes("ADMIN") ? (
-                // Admin Services Dropdown
+              item.label === "Services" && user && userRoles.includes("ADMIN") && !isAuthPage() ? (
+                // Admin Services Dropdown (only show for actual admins, not on auth pages)
                 <div key={item.path} className="relative group">
                   <motion.button
                     whileHover={{ scale: 1.02, y: -1 }}
@@ -294,10 +268,10 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right Side - Notifications & User Profile */}
+          {/* Right Side - User Profile & Auth */}
           <div className="flex items-center gap-3">
-            {/* User Profile */}
-            {user ? (
+            {/* User Profile - Hide on auth pages */}
+            {user && !isAuthPage() ? (
               <div className="hidden sm:block relative" ref={dropdownRef}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -345,17 +319,6 @@ const Navbar = () => {
                               {user.sub || "User"}
                             </h3>
                             <p className="text-sm text-slate-600 mb-2">Welcome back!</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {userRoles.map((role, index) => (
-                                <span
-                                  key={index}
-                                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${getRoleBadgeColor(role)}`}
-                                >
-                                  {getRoleIcon(role)}
-                                  {role}
-                                </span>
-                              ))}
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -411,27 +374,29 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              // Login/Signup Buttons
-              <div className="hidden sm:flex items-center gap-2">
-                <motion.a
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  href="/login"
-                  className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-slate-700 hover:text-cyan-600 hover:bg-slate-50 transition-all duration-200 border border-slate-200/60"
-                >
-                  <FaSignInAlt className="text-sm" />
-                  Login
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  href="/register"
-                  className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 shadow-sm"
-                >
-                  <FaUserPlus className="text-sm" />
-                  Sign Up
-                </motion.a>
-              </div>
+              // Login/Signup Buttons - Hide on auth pages
+              !isAuthPage() && (
+                <div className="hidden sm:flex items-center gap-2">
+                  <motion.a
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    href="/login"
+                    className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-slate-700 hover:text-cyan-600 hover:bg-slate-50 transition-all duration-200 border border-slate-200/60"
+                  >
+                    <FaSignInAlt className="text-sm" />
+                    Login
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    href="/register"
+                    className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 shadow-sm"
+                  >
+                    <FaUserPlus className="text-sm" />
+                    Sign Up
+                  </motion.a>
+                </div>
+              )
             )}
 
             {/* Mobile Menu Button */}
@@ -460,8 +425,8 @@ const Navbar = () => {
             <div className="px-4 pb-4 pt-3 space-y-1">
               {/* Mobile Navigation */}
               {navigationItems.map((item) => (
-                item.label === "Services" && user && userRoles.includes("ADMIN") ? (
-                  // Admin Services in mobile
+                item.label === "Services" && user && userRoles.includes("ADMIN") && !isAuthPage() ? (
+                  // Admin Services in mobile (only show for actual admins, not on auth pages)
                   <div key={item.path} className="pt-2 border-t border-slate-200/60">
                     <p className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase">Services</p>
                     {[
@@ -497,8 +462,8 @@ const Navbar = () => {
                 )
               ))}
 
-              {/* Mobile Authentication */}
-              {!user ? (
+              {/* Mobile Authentication - Hide on auth pages */}
+              {!user && !isAuthPage() ? (
                 <div className="pt-4 border-t border-slate-200/60 space-y-2">
                   <a
                     href="/login"
@@ -517,7 +482,7 @@ const Navbar = () => {
                     Sign Up
                   </a>
                 </div>
-              ) : (
+              ) : user && !isAuthPage() ? (
                 <div className="pt-4 border-t border-slate-200/60">
                   {/* Mobile User Info */}
                   <div className="flex items-center gap-3 px-4 py-3 mb-2">
@@ -548,7 +513,7 @@ const Navbar = () => {
                     Sign Out
                   </button>
                 </div>
-              )}
+              ) : null}
             </div>
           </motion.div>
         )}

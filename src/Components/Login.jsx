@@ -1,48 +1,17 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import api1 from "../Utils/api1";
 import { AuthContext } from "../Utils/AuthContext";
 import { showToast } from "../Utils/toastUtils";
  
-const Login = () => {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
- 
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
-      }
-      @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
-      .animate-fadeIn { animation: fadeIn 0.6s ease-in forwards; }
-      .animate-float { animation: float 6s ease-in-out infinite; }
-      .animate-gradientBG {
-        animation: gradientBG 15s ease infinite;
-        background-size: 800% 800%;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
  
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -51,7 +20,6 @@ const Login = () => {
  
     try {
       const response = await api1.post("/jwt/login", { username, password });
- 
       if (response.data) {
         await login(response.data);
         showToast("Login successful!", "success");
@@ -66,100 +34,186 @@ const Login = () => {
     }
   };
  
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
+ 
+  const floatCloud = {
+    y: [0, -20, 0],
+    transition: { duration: 10, repeat: Infinity, ease: "easeInOut" },
+  };
+ 
+  const inputVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.2, duration: 0.4 },
+    }),
+  };
+ 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(270deg, #d0f0fd, #a0d8f7, #81c7e5, #b1d6f7)", // Light cyan gradient
-        backgroundSize: "800% 800%",
-      }}
-    >
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 animate-gradientBG -z-10"></div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-200 to-white relative overflow-hidden">
+      {/* Floating Background Clouds */}
+      <motion.div
+        className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?fit=crop&w=1200&q=80')] bg-cover bg-center opacity-30"
+        animate={floatCloud}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent"></div>
  
-      {/* Floating background orbs */}
-      <div className="absolute w-96 h-96 bg-gradient-to-br from-cyan-300 to-cyan-500 rounded-full blur-3xl opacity-30 animate-float top-10 left-10"></div>
-      <div className="absolute w-80 h-80 bg-gradient-to-br from-cyan-400 to-cyan-200 rounded-full blur-3xl opacity-30 animate-float bottom-10 right-10"></div>
+      {/* Floating gradient orbs for depth */}
+      <motion.div
+        className="absolute w-96 h-96 bg-gradient-to-br from-sky-300 to-sky-500 rounded-full blur-3xl opacity-30 top-10 left-10"
+        animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-80 h-80 bg-gradient-to-br from-sky-400 to-sky-200 rounded-full blur-3xl opacity-30 bottom-10 right-10"
+        animate={{ y: [0, -30, 0], x: [0, -20, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
  
-      {/* Login Box */}
-      <div className="relative bg-white/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl w-full max-w-md border border-white/40 animate-fadeInUp">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-cyan-700">Welcome Back</h2>
-          <p className="text-gray-500 mt-2">Login to continue your journey</p>
-        </div>
+      {/* Login Card */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-[360px]"
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="flex justify-center mb-6"
+        >
+          <div className="bg-black text-white px-3 py-1 rounded-lg text-lg font-semibold shadow-md">
+            welcome back!
+          </div>
+        </motion.div>
+ 
+        <h2 className="text-center text-2xl font-semibold mb-2">
+          Sign in with email
+        </h2>
+        <p className="text-center text-gray-500 text-sm mb-6">
+          {/* Make a new doc to bring your words, data, and teams together. For free */}
+        </p>
  
         {error && (
-          <div className="text-red-600 bg-red-100 border border-red-300 p-3 rounded-md text-sm text-center animate-fadeIn">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-red-600 bg-red-100 border border-red-300 p-3 rounded-md text-sm text-center mb-4"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
  
-        <form onSubmit={handleLogin} className="space-y-5 mt-4">
-          <div className="transition-all duration-300 hover:scale-[1.02]">
-            <label className="block text-sm text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-gray-400 rounded-lg
-                         focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-100
-                         hover:border-gray-700 transition-colors duration-300"
-              required
-            />
-          </div>
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <motion.input
+            type="email"
+            placeholder="Email"
+            custom={0}
+            variants={inputVariants}
+            initial="hidden"
+            animate="visible"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            required
+          />
  
-          <div className="transition-all duration-300 hover:scale-[1.02]">
-            <label className="block text-sm text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-400 rounded-lg
-                         focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-100
-                         hover:border-gray-700 transition-colors duration-300"
-              required
-            />
-          </div>
+          <motion.input
+            type="password"
+            placeholder="Password"
+            custom={1}
+            variants={inputVariants}
+            initial="hidden"
+            animate="visible"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            required
+          />
  
           <div className="text-right">
-            <a
-              href="/forgot-password"
-              className="text-sm text-cyan-600 hover:underline"
-            >
+            <a href="/forgot-password" className="text-sm text-sky-500 hover:underline">
               Forgot password?
             </a>
           </div>
  
-          <button
+          <motion.button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white font-semibold rounded-lg transition-all duration-500 shadow-lg hover:shadow-xl transform hover:scale-[1.03]"
+            whileHover={{ scale: 1.05, boxShadow: "0px 8px 16px rgba(0,0,0,0.2)" }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-gray-800 to-black text-white font-semibold shadow-md transition-all duration-300"
           >
             {isLoading ? (
-              <div className="flex justify-center">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              </div>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"
+              ></motion.div>
             ) : (
-              "Sign In"
+              "Get Started"
             )}
-          </button>
+          </motion.button>
         </form>
  
-        <div className="text-center text-sm text-gray-500 mt-6">
+        {/* Divider */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="mt-6 text-center text-gray-500"
+        >
+          Or sign in with
+        </motion.div>
+ 
+        {/* Social Buttons */}
+        <div className="flex justify-center mt-3 space-x-3">
+          {[
+            {
+              src: "https://www.svgrepo.com/show/475656/google-color.svg",
+              alt: "Google",
+            },
+            {
+              src: "https://www.svgrepo.com/show/512120/facebook-176.svg",
+              alt: "Facebook",
+            },
+            {
+              src: "https://www.svgrepo.com/show/452210/apple.svg",
+              alt: "Apple",
+            },
+          ].map((item, i) => (
+            <motion.button
+              key={i}
+              whileHover={{ scale: 1.2, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-2 border rounded-full bg-white/70 shadow-md"
+              type="button"
+            >
+              <img src={item.src} alt={item.alt} className="w-6 h-6" />
+            </motion.button>
+          ))}
+        </div>
+ 
+        {/* Register */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="text-center text-sm text-gray-500 mt-6"
+        >
           Don’t have an account?{" "}
-          <a
-            href="/register"
-            className="text-cyan-600 hover:underline font-medium"
-          >
+          <a href="/register" className="text-sky-600 hover:underline font-medium">
             Create account
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
-};
- 
-export default Login;
+}

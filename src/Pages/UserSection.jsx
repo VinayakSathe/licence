@@ -9,7 +9,6 @@ import Home from "../Components/User/Home";
 const UserSection = () => {
   return (
     <div>
-    
 
       {/* <motion.div
         whileInView={{ opacity: 1, scale: 1 }}
@@ -21,9 +20,7 @@ const UserSection = () => {
       
         {/* <LicenseGrid /> */}
         <Home/>
-
-
-     
+        
     </div>
   );
 };

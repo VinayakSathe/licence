@@ -90,7 +90,7 @@ const UserSection = () => {
     const scrollToSection = (sectionId) => {
         const element = document.getElementById(sectionId);
         if (element) {
-            element.scrollIntoView({ 
+            element.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
@@ -163,33 +163,32 @@ const UserSection = () => {
         }
     ];
 
-
-const processSteps = [
-    {
-        icon: <FaCar />,  // Step 1: Driving license type
-        step: "01",
-        title: "Choose License Type",
-        description: "Select the license you need (food, driving, trade, etc.)"
-    },
-    {
-        icon: <FaUtensils />, // Step 2: Food license / document submission
-        step: "02",
-        title: "Submit Documents",
-        description: "Upload or fill required documents; we check for completeness"
-    },
-    {
-        icon: <FaBriefcase />, // Step 3: Professional / Trade license tracking
-        step: "03",
-        title: "Track & Approve",
-        description: "Monitor status updates; we follow up with authorities"
-    },
-    {
-        icon: <FaStore />, // Step 4: Shop / license received
-        step: "04",
-        title: "Receive Your License",
-        description: "Download digital copy or get physical license delivered"
-    }
-];
+    const processSteps = [
+        {
+            icon: <FaCar />,  // Step 1: Driving license type
+            step: "01",
+            title: "Choose License Type",
+            description: "Select the license you need (food, driving, trade, etc.)"
+        },
+        {
+            icon: <FaUtensils />, // Step 2: Food license / document submission
+            step: "02",
+            title: "Submit Documents",
+            description: "Upload or fill required documents; we check for completeness"
+        },
+        {
+            icon: <FaBriefcase />, // Step 3: Professional / Trade license tracking
+            step: "03",
+            title: "Track & Approve",
+            description: "Monitor status updates; we follow up with authorities"
+        },
+        {
+            icon: <FaStore />, // Step 4: Shop / license received
+            step: "04",
+            title: "Receive Your License",
+            description: "Download digital copy or get physical license delivered"
+        }
+    ];
 
     const testimonials = [
         {
@@ -271,7 +270,7 @@ const processSteps = [
                         <span className="block text-cyan-600 mt-2">Food, Driving, Business & More</span>
                     </h1>
                     <p className="text-lg text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-                        We simplify the process of applying, tracking, and receiving essential licenses. 
+                        We simplify the process of applying, tracking, and receiving essential licenses.
                         No more confusion, delays or paperwork headaches.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -325,43 +324,42 @@ const processSteps = [
                 </div>
             </section>
 
-           {/* How It Works Section */}
-<section id="how-it-works" className="py-16 bg-gradient-to-br from-cyan-50 via-white to-slate-100">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
-                How It Works
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                Simple 4-step process to get your license approved quickly and efficiently
-            </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {processSteps.map((step, index) => (
-                <div key={index} className="text-center group">
-                    <div className="bg-white rounded-2xl p-6 border border-cyan-200 hover:border-cyan-400 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
-                        
-                        {/* Center icon like License Cards */}
-                        <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center 
+            {/* How It Works Section */}
+            <section id="how-it-works" className="py-16 bg-gradient-to-br from-cyan-50 via-white to-slate-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                            How It Works
+                        </h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                            Simple 4-step process to get your license approved quickly and efficiently
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {processSteps.map((step, index) => (
+                            <div key={index} className="text-center group">
+                                <div className="bg-white rounded-2xl p-6 border border-cyan-200 hover:border-cyan-400 shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
+
+                                    {/* Center icon like License Cards */}
+                                    <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center 
                                         rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 
                                         shadow-lg group-hover:from-cyan-500 group-hover:to-cyan-700 transition-all duration-300">
-                            {React.cloneElement(step.icon, { className: "text-2xl text-white" })}
-                        </div>
+                                        {React.cloneElement(step.icon, { className: "text-2xl text-white" })}
+                                    </div>
 
-                        {/* Step Number */}
-                        <div className="w-8 h-8 mx-auto -mt-8 mb-2 bg-cyan-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                            {step.step}
-                        </div>
+                                    {/* Step Number */}
+                                    <div className="w-8 h-8 mx-auto -mt-8 mb-2 bg-cyan-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        {step.step}
+                                    </div>
 
-                        <h3 className="text-lg font-semibold text-slate-800 mb-2">{step.title}</h3>
-                        <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
+                                    <h3 className="text-lg font-semibold text-slate-800 mb-2">{step.title}</h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            ))}
-        </div>
-    </div>
-</section>
-
+            </section>
 
             {/* License Types Section */}
             <section id="services" className="py-16 bg-white">
@@ -462,33 +460,32 @@ const processSteps = [
             </section>
 
             {/* Final CTA Section */}
-           {/* Final CTA Section */}
-<section className="py-16 bg-gradient-to-br from-rose-50 via-pink-50 to-red-50">
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
-            Ready to Get Your License?
-        </h2>
-        <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who have streamlined their license application process with us.
-            <span className="block font-semibold text-slate-800 mt-2">Free consultation for first-time users!</span>
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-                onClick={() => scrollToSection('services')}
-                className="bg-cyan-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3"
-            >
-                Get Started Today <FaArrowRight className="text-sm" />
-            </button>
-            <Link
-                to="/contact"
-                className="border-2 border-cyan-600 text-cyan-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-cyan-600 hover:text-white transition-all duration-300 transform hover:scale-105 flex items-center gap-3"
-            >
-                <FaPhoneAlt className="text-sm" />
-                Free Consultation
-            </Link>
-        </div>
-    </div>
-</section>
+            <section className="py-16 bg-gradient-to-br from-rose-50 via-pink-50 to-red-50">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                        Ready to Get Your License?
+                    </h2>
+                    <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+                        Join thousands of satisfied customers who have streamlined their license application process with us.
+                        <span className="block font-semibold text-slate-800 mt-2">Free consultation for first-time users!</span>
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <button
+                            onClick={() => scrollToSection('services')}
+                            className="bg-cyan-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3"
+                        >
+                            Get Started Today <FaArrowRight className="text-sm" />
+                        </button>
+                        <Link
+                            to="/contact"
+                            className="border-2 border-cyan-600 text-cyan-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-cyan-600 hover:text-white transition-all duration-300 transform hover:scale-105 flex items-center gap-3"
+                        >
+                            <FaPhoneAlt className="text-sm" />
+                            Free Consultation
+                        </Link>
+                    </div>
+                </div>
+            </section>
 
 
             {showRegisterPopup && (
