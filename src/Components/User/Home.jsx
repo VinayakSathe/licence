@@ -41,7 +41,7 @@ const UserSection = () => {
             try {
                 const response = await api.get("/api/licenseList/getLicenseList");
                 console.log("Response: ", response.data);
-
+    
                 if (response.status === 200) {
                     setLicenses(response.data.data || []);
                 } else {
@@ -52,7 +52,8 @@ const UserSection = () => {
                 if (error.code === 'ERR_NETWORK') {
                     setError("Unable to connect to server. Please check if the backend is running.");
                 } else if (error.response?.status === 401) {
-                    navigate("/login");
+                    // Don't navigate to login automatically — maybe just skip the data
+                    setError("Please log in to view license details.");
                 } else {
                     setError("Failed to load licenses. Please try again later.");
                 }
@@ -60,9 +61,15 @@ const UserSection = () => {
                 setIsLoading(false);
             }
         };
-
-        fetchLicenses();
-    }, [navigate]);
+    
+        // ✅ Only fetch licenses if user is logged in
+        if (user) {
+            fetchLicenses();
+        } else {
+            setIsLoading(false); // prevent infinite loading when not logged in
+        }
+    }, [navigate, user]);
+    
 
     const handleApply = (licenseName, validTill, images, description) => {
         console.log("Selected License: ", licenseName);

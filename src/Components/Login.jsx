@@ -185,7 +185,7 @@ export default function Login() {
               alt: "Facebook",
             },
             {
-              src: "https://www.svgrepo.com/show/452210/apple.svg",
+              src: "https://www.clipartmax.com/png/small/39-395939_logo-apple-hd%E2%8E%AAvector-illustrator-apple-icon-vector-png.png",
               alt: "Apple",
             },
           ].map((item, i) => (
