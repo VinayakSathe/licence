@@ -6,7 +6,9 @@ import { showConfirm, showToast } from "../Utils/toastUtils";
 import { 
   FaRegTrashAlt, 
   FaPlus, 
-  FaEdit
+  FaEdit,
+  FaBars,
+  FaTimes
 } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Utils/AuthContext";
@@ -16,6 +18,7 @@ const LicenseManager = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const licensesPerPage = 6;
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -44,6 +47,18 @@ const LicenseManager = () => {
 
   useEffect(() => {
     fetchLicenses();
+  }, []);
+
+  // Close mobile sidebar when resizing to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const totalPages = Math.ceil(licenses.length / licensesPerPage);
@@ -83,27 +98,54 @@ const LicenseManager = () => {
   const userRoles = user?.roles || [];
   const isAdmin = Array.isArray(userRoles) && userRoles.includes("ADMIN");
 
+  // Mobile sidebar toggle
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  // Navigation handler
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsMobileSidebarOpen(false);
+  };
+
   // Main license manager content with light bluish theme
   const licenseManagerContent = (
-    <div className="flex-1 p-6 overflow-y-auto">
-      <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex-1 p-4 lg:p-6 overflow-y-auto">
+      {/* Mobile Header with Menu Button */}
+      {isAdmin && (
+        <div className="lg:hidden mb-4 flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-cyan-100">
+          <button
+            onClick={toggleMobileSidebar}
+            className="p-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700 transform hover:scale-105 transition-all duration-300"
+          >
+            {isMobileSidebarOpen ? <FaTimes className="text-lg" /> : <FaBars className="text-lg" />}
+          </button>
+          <h1 className="text-xl font-bold text-cyan-700">
+            License Manager
+          </h1>
+          <div className="w-8"></div> {/* Spacer for balance */}
+        </div>
+      )}
+
+      <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-slate-800 mb-4">
+          <div className="text-center mb-8 lg:mb-12">
+            <h1 className="text-3xl lg:text-4xl font-bold text-cyan-800 mb-4">
               License List Management
-              <span className="block text-cyan-600 mt-2">Manage All License Types</span>
+              <span className="block text-blue-600 mt-2 text-lg lg:text-xl">Manage All License Types</span>
             </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className="text-base lg:text-lg text-cyan-700 max-w-2xl mx-auto">
               Add, edit, and manage all license types available in the system
             </p>
           </div>
 
           {/* Add License Button */}
-          <div className="flex justify-end mb-8">
+          <div className="flex justify-end mb-6 lg:mb-8">
             <button
               onClick={handleOpenPopup}
-              className="flex items-center gap-3 bg-cyan-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-cyan-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
+              className="flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 lg:px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-cyan-500/25 text-sm lg:text-base"
             >
               <FaPlus className="text-sm" />
               Add License
@@ -112,18 +154,18 @@ const LicenseManager = () => {
           </div>
 
           {/* License Table */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-cyan-100">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-cyan-200">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-cyan-100">
-                <thead className="bg-cyan-600">
+                <thead className="bg-gradient-to-r from-cyan-500 to-blue-500">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
+                    <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
                       License Name
                     </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
+                    <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
                       Validity
                     </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
+                    <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -132,29 +174,29 @@ const LicenseManager = () => {
                   {currentLicenses.map((license, index) => (
                     <tr 
                       key={license.licenseID}
-                      className="hover:bg-cyan-50 transition-all duration-300"
+                      className="hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50 transition-all duration-300"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-slate-800">
+                      <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-cyan-800">
                           {license.licenseName}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-cyan-100 text-cyan-700 border border-cyan-200">
+                      <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-3 lg:px-4 py-1 lg:py-2 rounded-full text-xs lg:text-sm font-semibold bg-cyan-100 text-cyan-700 border border-cyan-300">
                           {license.validTill} {license.validTill === "1" ? "Year" : "Years"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2 lg:gap-3">
                           {/* Edit Button */}
-                          <button className="p-3 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transform hover:scale-110 transition-all duration-300">
-                            <FaEdit className="text-sm" />
+                          <button className="p-2 lg:p-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transform hover:scale-110 transition-all duration-300">
+                            <FaEdit className="text-xs lg:text-sm" />
                           </button>
                           <button
                             onClick={() => deleteLicense(license.licenseID)}
-                            className="p-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transform hover:scale-110 transition-all duration-300"
+                            className="p-2 lg:p-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600 transform hover:scale-110 transition-all duration-300"
                           >
-                            <FaRegTrashAlt className="text-sm" />
+                            <FaRegTrashAlt className="text-xs lg:text-sm" />
                           </button>
                         </div>
                       </td>
@@ -166,21 +208,21 @@ const LicenseManager = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-between items-center mt-8 p-6 bg-white rounded-2xl shadow-lg border border-cyan-100">
+          <div className="flex justify-between items-center mt-6 lg:mt-8 p-4 lg:p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-cyan-200">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold hover:bg-cyan-700 transform hover:scale-105 transition-all duration-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed text-sm lg:text-base"
             >
               Previous
             </button>
-            <span className="text-lg font-semibold text-slate-700">
-              Page <span className="text-cyan-600">{currentPage}</span> of <span className="text-cyan-600">{totalPages}</span>
+            <span className="text-sm lg:text-lg font-semibold text-cyan-700">
+              Page <span className="text-blue-600">{currentPage}</span> of <span className="text-blue-600">{totalPages}</span>
             </span>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold hover:bg-cyan-700 transform hover:scale-105 transition-all duration-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:hover:scale-100 disabled:cursor-not-allowed text-sm lg:text-base"
             >
               Next
             </button>
@@ -188,13 +230,13 @@ const LicenseManager = () => {
 
           {/* Empty State */}
           {licenses.length === 0 && (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4 text-cyan-400">📄</div>
-              <h3 className="text-2xl font-semibold text-slate-800 mb-2">No Licenses Available</h3>
-              <p className="text-slate-600 mb-6">Get started by adding your first license.</p>
+            <div className="text-center py-12 lg:py-16">
+              <div className="text-5xl lg:text-6xl mb-4 text-cyan-400">📄</div>
+              <h3 className="text-xl lg:text-2xl font-semibold text-cyan-800 mb-2">No Licenses Available</h3>
+              <p className="text-cyan-700 mb-6 text-sm lg:text-base">Get started by adding your first license.</p>
               <button
                 onClick={handleOpenPopup}
-                className="flex items-center gap-3 bg-cyan-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-cyan-700 transform hover:scale-105 transition-all duration-300 mx-auto"
+                className="flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 lg:px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 mx-auto text-sm lg:text-base"
               >
                 <FaPlus className="text-sm" />
                 Add Your First License
@@ -203,21 +245,94 @@ const LicenseManager = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Mobile Sidebar */}
+      {isAdmin && (
+        <div className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-cyan-600 to-blue-600 text-white z-50 transform transition-transform duration-300 lg:hidden ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">Admin Panel</h2>
+              <button
+                onClick={toggleMobileSidebar}
+                className="p-2 rounded-lg bg-cyan-700 hover:bg-cyan-800 transition-colors"
+              >
+                <FaTimes className="text-lg" />
+              </button>
+            </div>
+            <nav className="flex flex-col gap-4">
+              <button
+                onClick={() => handleNavigation("/dashboard")}
+                className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => handleNavigation("/customermanagement")}
+                className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+              >
+                Customer Management
+              </button>
+              <button
+                onClick={() => handleNavigation("/licensemanagement")}
+                className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+              >
+                License Management
+              </button>
+              <button
+                onClick={() => handleNavigation("/licensemanager")}
+                className="text-left bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+              >
+                Add License
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
     </div>
   );
 
   // Admin layout with sidebar
   if (isAdmin) {
     return (
-      <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-        {/* Sidebar */}
-        <aside className="w-64 bg-cyan-600 text-white flex-shrink-0 min-h-screen p-6">
+      <div className="flex min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50">
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block w-64 bg-gradient-to-b from-cyan-600 to-blue-600 text-white flex-shrink-0 min-h-screen p-6">
           <h2 className="text-2xl font-bold mb-8">Admin Panel</h2>
           <nav className="flex flex-col gap-4">
-            <a href="/dashboard" className="hover:bg-cyan-700 px-4 py-2 rounded transition">Dashboard</a>
-            <a href="/customermanagement" className="hover:bg-cyan-700 px-4 py-2 rounded transition">Customer Management</a>
-            <a href="/licensemanagement" className="hover:bg-cyan-700 px-4 py-2 rounded transition">License Management</a>
-            <a href="/licensemanager" className="hover:bg-cyan-700 px-4 py-2 rounded transition bg-cyan-700">Add License</a>
+            <button
+              onClick={() => handleNavigation("/dashboard")}
+              className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => handleNavigation("/customermanagement")}
+              className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+            >
+              Customer Management
+            </button>
+            <button
+              onClick={() => handleNavigation("/licensemanagement")}
+              className="text-left hover:bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+            >
+              License Management
+            </button>
+            <button
+              onClick={() => handleNavigation("/licensemanager")}
+              className="text-left bg-cyan-700 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105"
+            >
+              Add License
+            </button>
           </nav>
         </aside>
 
